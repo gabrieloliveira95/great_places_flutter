@@ -14,12 +14,17 @@
 	<string>great_places_flutter</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-
+	<!-- Camera Uses -->
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>WeNeedToTakeAPicture</string>
 	<key>NSCameraUsageDescription</key>
-	<string>WeNeedToTakeAPicture</string>
-
+	<string>WeNeedToTakeAPicture</string>	
+	<!-- Location Uses -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>WeNeedToGetYourLocation</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>WeNeedToGetYourLocation</string>
+	<!-- End -->	
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>

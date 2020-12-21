@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:great_places_flutter/provider/great_places_provider.dart';
 import 'package:great_places_flutter/widgets/image_input.dart';
+import 'package:great_places_flutter/widgets/location_input.dart';
 import 'package:provider/provider.dart';
 
 class PlaceFormScreen extends StatefulWidget {
@@ -13,17 +15,35 @@ class PlaceFormScreen extends StatefulWidget {
 class _PlaceFormScreenState extends State<PlaceFormScreen> {
   final _titleController = TextEditingController();
   File _pickedImage;
+  LatLng _pickedPosition;
 
   void _selectImage(File pickedImage) {
-    _pickedImage = pickedImage;
+    setState(() {
+      _pickedImage = pickedImage;
+    });
+  }
+
+  void _selectPosition(LatLng position) {
+    setState(() {
+      _pickedPosition = position;
+    });
+  }
+
+  bool isValidForm() {
+    return _titleController.text.isNotEmpty &&
+        _pickedImage != null &&
+        _pickedPosition != null;
   }
 
   void _submitForm() {
-    if (_titleController.text.isEmpty || _pickedImage == null) {
+    if (isValidForm()) {
       return;
     }
-    Provider.of<GreatPlacesProvider>(context, listen: false)
-        .addPlace(_titleController.text, _pickedImage);
+    Provider.of<GreatPlacesProvider>(context, listen: false).addPlace(
+      title: _titleController.text,
+      image: _pickedImage,
+      position: _pickedPosition,
+    );
     Navigator.of(context).pop();
   }
 
@@ -44,17 +64,23 @@ class _PlaceFormScreenState extends State<PlaceFormScreen> {
                   children: [
                     TextField(
                       controller: _titleController,
-                      decoration: InputDecoration(labelText: 'Title'),
+                      decoration: InputDecoration(
+                        labelText: 'Title',
+                      ),
+                      onChanged: (text) {
+                        setState(() {});
+                      },
                     ),
                     SizedBox(width: 10),
                     ImageInput(this._selectImage),
+                    LocationInput(_selectPosition),
                   ],
                 ),
               ),
             ),
           ),
           RaisedButton.icon(
-            onPressed: _submitForm,
+            onPressed: isValidForm() ? _submitForm : null,
             icon: Icon(Icons.add),
             label: Text('Add'),
             elevation: 0,

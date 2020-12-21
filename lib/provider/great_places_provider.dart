@@ -2,8 +2,10 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:great_places_flutter/models/places.dart';
 import 'package:great_places_flutter/utils/db_util.dart';
+import 'package:great_places_flutter/utils/location.dart';
 
 class GreatPlacesProvider with ChangeNotifier {
   List<Places> _items = [];
@@ -15,7 +17,11 @@ class GreatPlacesProvider with ChangeNotifier {
               id: e['id'],
               title: e['title'],
               image: File(e['image']),
-              location: null,
+              location: PlaceLocation(
+                lat: e['lat'],
+                long: e['long'],
+                address: e['address'],
+              ),
             ))
         .toList();
     notifyListeners();
@@ -33,11 +39,16 @@ class GreatPlacesProvider with ChangeNotifier {
     return _items[index];
   }
 
-  void addPlace(String title, File image) {
+  Future<void> addPlace({String title, File image, LatLng position}) async {
+    String address = await LocationUtil.getAddressFrom(position);
     final newPlace = Places(
       id: Random().nextDouble().toString(),
       image: image,
-      location: null,
+      location: PlaceLocation(
+        lat: position.latitude,
+        long: position.longitude,
+        address: address,
+      ),
       title: title,
     );
     _items.add(newPlace);
@@ -45,6 +56,9 @@ class GreatPlacesProvider with ChangeNotifier {
       'id': newPlace.id,
       'title': newPlace.title,
       'image': newPlace.image.path,
+      'lat': position.latitude,
+      'long': position.longitude,
+      'address': address,
     });
     notifyListeners();
   }
